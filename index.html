@@ -449,9 +449,24 @@
       if (!nome) return show('Escreva seu nome.', false);
       if (digits.length !== 11) return show('Confira o WhatsApp: DDD + 9 dígitos.', false);
       if (!document.getElementById('wl-ok').checked) return show('Marque o aceite pra gente poder te avisar.', false);
-      /* ENVIO: aqui entra o POST pro backend. */
-      f.reset();
-      show('Pronto, ' + nome.split(' ')[0] + '! Você está na lista. A gente avisa pelo WhatsApp.', true);
+      /* ENVIO: lista provisória no Google Forms (planilha "Meu Tuco · Lista de espera"). Trocar pelo endpoint da Twin Fin quando existir. */
+      var btn = f.querySelector('button[type="submit"]');
+      var aceite = f.querySelector('label[for="wl-ok"] span');
+      var dados = new URLSearchParams();
+      dados.append('entry.1123621736', nome);
+      dados.append('entry.744457421', '55' + digits);
+      dados.append('entry.976327024', 'sim');
+      dados.append('entry.1692514925', aceite ? aceite.textContent.trim() : '');
+      dados.append('entry.2041237632', '2026-10-02');
+      dados.append('entry.624260681', 'site-rodape');
+      btn.disabled = true;
+      fetch('https://docs.google.com/forms/d/e/1FAIpQLScwZP5dulCcnX2okANzmpFhxHhp1nsEMDfd3PFOSK6A65kuTw/formResponse', { method: 'POST', mode: 'no-cors', body: dados })
+        .then(function () {
+          f.reset();
+          show('Pronto, ' + nome.split(' ')[0] + '! Você está na lista. A gente avisa pelo WhatsApp.', true);
+        })
+        .catch(function () { show('Não deu pra enviar agora. Confira sua internet e tente de novo.', false); })
+        .then(function () { btn.disabled = false; });
     });
   })();
 </script>
